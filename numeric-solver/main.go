@@ -3,9 +3,11 @@ package main
 import (
 	"main/plot"
 	"main/solver"
+	"math"
 )
 
 func main() {
+	// System of ODE
 	// fs := []func(float64, []float64) float64{
 	// 	func(t float64, ys []float64) float64 {
 	// 		return -ys[1]
@@ -15,29 +17,33 @@ func main() {
 	// 	},
 	// }
 
-	// xb := [2]float64{0, 10}
+	// tb := [2]float64{0, .6}
 	// init := []float64{10, 5}
-	// h := 0.1
+	// nn := 100
+	// tl, yl := solver.RungeKutta(fs, tb, init, nn)
+	// plot.Plot(tl, [][]string{{"A", "B"}}, yl)
+
+	// Comparision between RK, Euler, and exact
 	fs := []func(float64, []float64) float64{
 		func(t float64, ys []float64) float64 {
-			return t
+			return ys[0] - t*t + 1
 		},
 	}
-	tb := [2]float64{0, .3}
+	tb := [2]float64{0, 2}
 	init := []float64{0}
-	h := 0.1
-	tl, ylr := solver.RungeKutta(fs, tb, init, h)
-	_, yle := solver.Euler(fs, tb, init, h)
+	nn := 2
+	tl, ylr := solver.RungeKutta(fs, tb, init, nn)
+	_, yle := solver.Euler(fs, tb, init, nn)
 	n := len(yle[0])
 	yt := make([]float64, n)
 	for i := 0; i < n; i++ {
-		t := (tb[0] + (tb[1]-tb[0])/float64(n-1)*float64(i))
-		yt[i] = t * t / 2
+		t := tb[0] + (tb[1]-tb[0])/float64(nn)*float64(i)
+		yt[i] = t*t + 2*t + 1 - math.Exp(t)
 	}
-	label := []string{
-		"Runge-Kutta",
-		"Euler",
-		"Exact",
+	label := [][]string{
+		{"Runge-Kutta"},
+		{"Euler"},
+		{"Exact"},
 	}
 	plot.Plot(tl, label, ylr, yle, [][]float64{yt})
 }

@@ -12,7 +12,7 @@ import (
 	"golang.org/x/image/math/fixed"
 )
 
-func Plot(t []float64, label []string, yss ...[][]float64) {
+func Plot(t []float64, label [][]string, yss ...[][]float64) {
 	width, height := 600, 600
 	pad := 10
 	tb := [2]float64{t[0], t[len(t)-1]}
@@ -20,12 +20,12 @@ func Plot(t []float64, label []string, yss ...[][]float64) {
 	pal := []color.Color{
 		color.White,
 		color.Black,
+		color.NRGBA{255, 0, 0, 255},
+		color.NRGBA{0, 255, 0, 255},
+		color.NRGBA{150, 150, 0, 255},
 	}
-	for i := 1; i <= 8; i++ {
-		s := uint8(32 * i)
-		pal = append(pal, color.NRGBA{
-			255 - s, 255 + s, 0, 255,
-		})
+	if len(yss) > len(pal) {
+		panic("Not enough colors!")
 	}
 	c := image.NewPaletted(image.Rect(0, 0, width, height), pal)
 	clear(c)
@@ -62,7 +62,14 @@ func Plot(t []float64, label []string, yss ...[][]float64) {
 			Face: basicfont.Face7x13,
 		}
 		d.Dot = fixed.Point26_6{fixed.I(500), fixed.I(15 * (p + 1))}
-		d.DrawString(label[p])
+		lab := ""
+		for i, s := range label[p] {
+			lab += s
+			if i < len(label[p])-1 {
+				lab += ","
+			}
+		}
+		d.DrawString(lab)
 
 	}
 	fp, _ := os.Create("graph.png")

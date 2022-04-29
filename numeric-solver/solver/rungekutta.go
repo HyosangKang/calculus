@@ -1,10 +1,11 @@
 package solver
 
-func RungeKutta(fs []func(float64, []float64) float64, r [2]float64, y0 []float64, h float64) ([]float64, [][]float64) {
+func RungeKutta(fs []func(float64, []float64) float64, r [2]float64, y0 []float64, nn int) ([]float64, [][]float64) {
 	if len(y0) != len(fs) {
 		panic("The sizes of outputs do not match!")
 	}
 	n := len(y0)
+	h := (r[1] - r[0]) / float64(nn)
 	tl := []float64{r[0]}
 	yl := make([][]float64, n)
 	for i := 0; i < n; i++ {
@@ -12,7 +13,8 @@ func RungeKutta(fs []func(float64, []float64) float64, r [2]float64, y0 []float6
 	}
 	ys := make([]float64, n)
 	copy(ys, y0)
-	for t := r[0]; t <= r[1]-h; t += h {
+	for l := 0; l < nn; l++ {
+		t := r[0] + float64(l)*h
 		k := make([][]float64, 4)
 		for j := 0; j < 4; j++ {
 			k[j] = make([]float64, len(y0))
