@@ -6,55 +6,81 @@ import (
 	"image/png"
 	"math"
 	"os"
+
+	"golang.org/x/image/font"
+	"golang.org/x/image/font/basicfont"
+	"golang.org/x/image/math/fixed"
 )
 
-func Plot(t []float64, ys [][]float64) {
+func Plot(t []float64, label []string, yss ...[][]float64) {
 	width, height := 600, 600
 	pad := 10
 	tb := [2]float64{t[0], t[len(t)-1]}
-	yb := findYb(ys)
+	yb := findYb(yss)
 	pal := []color.Color{
 		color.White,
 		color.Black,
+	}
+	for i := 1; i <= 8; i++ {
+		s := uint8(32 * i)
+		pal = append(pal, color.NRGBA{
+			255 - s, 255 + s, 0, 255,
+		})
 	}
 	c := image.NewPaletted(image.Rect(0, 0, width, height), pal)
 	clear(c)
 	axes(c, tb, yb, pad)
 	a := make([]int, 2)
 	b := make([]int, 2)
-	for _, y := range ys {
-		for i := 0; i < len(t)-1; i++ {
-			for j := 0; j < 2; j++ {
-				a[j] = pad + int((t[i+j]-tb[0])/(tb[1]-tb[0])*float64(width-2*pad))
-				b[j] = pad + int((yb[1]-y[i+j])/(yb[1]-yb[0])*float64(height-2*pad))
-			}
-			n := findMax(a, b)
-			var ai, bi int
-			for j := 0; j < n; j++ {
-				ain := a[0] + int(float64((a[1]-a[0])*j)/float64(n))
-				bin := b[0] + int(float64((b[1]-b[0])*j)/float64(n))
-				if ai == ain && bi == bin {
-					continue
+	for p, ys := range yss {
+		for _, y := range ys {
+			for i := 0; i < len(t)-1; i++ {
+				for j := 0; j < 2; j++ {
+					a[j] = pad + int((t[i+j]-tb[0])/(tb[1]-tb[0])*float64(width-2*pad))
+					b[j] = pad + int((yb[1]-y[i+j])/(yb[1]-yb[0])*float64(height-2*pad))
 				}
-				ai, bi = ain, bin
-				c.Set(ai, bi, c.Palette[1])
+				n := findMax(a, b)
+				var ai, bi int
+				for j := 0; j < n; j++ {
+					ain := a[0] + int(float64((a[1]-a[0])*j)/float64(n))
+					bin := b[0] + int(float64((b[1]-b[0])*j)/float64(n))
+					if ai == ain && bi == bin {
+						continue
+					}
+					ai, bi = ain, bin
+					c.Set(ai, bi, c.Palette[p+2])
+				}
 			}
 		}
+
+		for i := 0; i < 50; i++ {
+			c.Set(440+i, 15*(p+1), c.Palette[p+2])
+		}
+		d := &font.Drawer{
+			Dst:  c,
+			Src:  image.NewUniform(color.RGBA{0, 0, 0, 255}),
+			Face: basicfont.Face7x13,
+		}
+		d.Dot = fixed.Point26_6{fixed.I(500), fixed.I(15 * (p + 1))}
+		d.DrawString(label[p])
+
 	}
 	fp, _ := os.Create("graph.png")
 	defer fp.Close()
 	png.Encode(fp, c)
 }
 
-func findYb(ys [][]float64) [2]float64 {
+func findYb(yss [][][]float64) [2]float64 {
 	ymin, ymax := math.MaxFloat64, -math.MaxFloat64
-	for _, y := range ys {
-		for _, yy := range y {
-			if yy > ymax {
-				ymax = yy
-			}
-			if yy < ymin {
-				ymin = yy
+	for _, ys := range yss {
+		for _, y := range ys {
+			for _, yy := range y {
+				if yy > ymax {
+					ymax = yy
+				}
+				if yy < ymin {
+					ymin = yy
+				}
 			}
 		}
 	}

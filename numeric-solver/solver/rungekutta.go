@@ -1,4 +1,4 @@
-package rk
+package solver
 
 func RungeKutta(fs []func(float64, []float64) float64, r [2]float64, y0 []float64, h float64) ([]float64, [][]float64) {
 	if len(y0) != len(fs) {

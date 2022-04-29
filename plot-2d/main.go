@@ -30,7 +30,6 @@ func main() {
 		fmt.Printf("The lower bound(%.3f) must be less than the upper bound(%.3f)\n\n", a, b)
 		return
 	}
-
-	g := graph.New(f, [2]float64{a, b})
+	g := graph.New(f, [2]float64{a, b}, 101)
 	g.Draw("graph.png")
 }
