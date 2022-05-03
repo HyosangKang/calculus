@@ -1,4 +1,4 @@
-package spsim
+package unforced
 
 import (
 	"fmt"
@@ -124,7 +124,7 @@ func (s *SpSim) findSolution() {
 			// x(t) + c1*cos(t) + c2*sin(t) + A*t*cos(t) + B*t*sin(t)
 			// c1 = x0
 			// c2 + A = x1
-			c1, c2 = x0, x1 - A
+			c1, c2 = x0, x1-A
 		} else {
 			// x(t) = c1*exp(re*t)*cos(im*t) + c2*exp(re*t)*sin(im*t) + A*cos(t) + B*sin(t)
 			// c1 + A = x0
@@ -142,7 +142,7 @@ func (s *SpSim) findSolution() {
 		return -fp(t)
 	}
 	s.F = func(t float64) float64 {
-		return -fp(t)-fc(t)
+		return -fp(t) - fc(t)
 	}
 }
 

@@ -2,58 +2,8 @@ package game
 
 import (
 	"fmt"
-	"sync"
 	"time"
 )
-
-type Game struct {
-	verbose bool
-	n       int
-	minions []*minion
-}
-
-// nss is the array of minion's info [num, hp, dps]
-func NewGame(v bool, nss ...[]int) *Game {
-	g := &Game{
-		verbose: v,
-		n:       len(nss),
-	}
-
-	id := 0
-	for i, ns := range nss {
-		for j := 0; j < ns[0]; j++ {
-			m := newMinion(g, i, id, ns[1], ns[2])
-			g.minions = append(g.minions, m)
-			id++
-		}
-	}
-	return g
-}
-
-func (g *Game) Start() {
-	var wg sync.WaitGroup
-	for _, m := range g.minions {
-		m := m
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			m.deploy()
-		}()
-	}
-	wg.Wait()
-}
-
-func (g *Game) Report() {
-	r := make([]int, g.n)
-	for i := 0; i < g.n; i++ {
-		for _, m := range g.minions {
-			if m.tag == i && m.hp > 0 {
-				r[i]++
-			}
-		}
-	}
-	fmt.Println(r)
-}
 
 type minion struct {
 	game    *Game
@@ -80,6 +30,7 @@ func (m *minion) deploy() {
 			if m.game.verbose {
 				fmt.Printf("minion [%d(%d)] hp is %d\n", m.id, m.tag, m.hp)
 			}
+			m.kia()
 			break
 		}
 		if !m.attack() {
@@ -89,6 +40,15 @@ func (m *minion) deploy() {
 			break
 		}
 	}
+}
+
+func (m *minion) kia() {
+	k := kia{
+		time: int(time.Since(m.game.start).Milliseconds()),
+		tag:  m.tag,
+		id:   m.id,
+	}
+	m.game.report = append(m.game.report, k)
 }
 
 func (m *minion) attack() bool {

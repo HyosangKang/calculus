@@ -1,4 +1,4 @@
-package spsim
+package forced
 
 import (
 	"fmt"

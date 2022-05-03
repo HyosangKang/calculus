@@ -1,4 +1,4 @@
-package spsim
+package forced
 
 import (
 	"image"
@@ -92,8 +92,8 @@ func drawLine(c *image.Paletted, p0, p1 [2]int) {
 }
 
 func findMax(p0, p1 [2]int) int {
-	mx := absInt(p0[0]-p1[0])
-	my := absInt(p0[1]-p1[1])
+	mx := absInt(p0[0] - p1[0])
+	my := absInt(p0[1] - p1[1])
 	if mx >= my {
 		return mx
 	}

@@ -5,7 +5,7 @@ import (
 	"image/color"
 	"math"
 
-	"main/graph"
+	"calculus/graph"
 )
 
 func main() {
@@ -19,7 +19,7 @@ func main() {
 	}
 	// take the inputs
 	// a, b := handleInput()
-	g := graph.NewGraph(x, y, -2, 2, 101)
+	g := graph.NewGraphFunc(x, y, -2, 2, 101)
 	c.Add(g, color.NRGBA{255, 0, 0, 255}, "cos")
 
 	// add another graph
@@ -29,7 +29,7 @@ func main() {
 	x = func(t float64) float64 {
 		return t
 	}
-	g = graph.NewGraph(x, y, 1, 2, 101)
+	g = graph.NewGraphFunc(x, y, 1, 2, 101)
 	c.Add(g, color.NRGBA{0, 0, 255, 255}, "sin")
 
 	c.Draw("graph.png")
