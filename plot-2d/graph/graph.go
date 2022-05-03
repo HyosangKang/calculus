@@ -6,6 +6,10 @@ import (
 	"image/png"
 	"math"
 	"os"
+
+	"golang.org/x/image/font"
+	"golang.org/x/image/font/basicfont"
+	"golang.org/x/image/math/fixed"
 )
 
 var WIDTH, HEIGHT int = 600, 600
@@ -38,12 +42,13 @@ func NewGraph(fx, fy func(float64) float64, t0, t1 float64, n int) *graph {
 }
 
 type canvas struct {
-	c   *image.Paletted
-	sz  [2]int
-	gs  []*graph
-	b   [2][2]float64
-	tr  [2]func(float64) int
-	pad int
+	c     *image.Paletted
+	label []string
+	sz    [2]int
+	gs    []*graph
+	b     [2][2]float64
+	tr    [2]func(float64) int
+	pad   int
 }
 
 func NewCanvas(w, h int) *canvas {
@@ -59,8 +64,10 @@ func NewCanvas(w, h int) *canvas {
 	}
 }
 
-func (c *canvas) Add(g *graph) {
+func (c *canvas) Add(g *graph, co color.Color, lab string) {
 	c.gs = append(c.gs, g)
+	c.c.Palette = append(c.c.Palette, co)
+	c.label = append(c.label, lab)
 	ss := [2][]float64{g.xr, g.yr}
 	for j := 0; j < 2; j++ {
 		for _, s := range ss[j] {
@@ -87,17 +94,21 @@ func (c *canvas) clear() {
 	}
 }
 
-func (c *canvas) axes() {
+func (c *canvas) addAxes() {
 	ax := &graph{
 		xr: lin(c.b[0][0], c.b[0][1], 100),
 		yr: lin(0, 0, 100),
 	}
-	c.gs = append(c.gs, ax)
+	for i := 0; i < 100; i++ {
+		c.drawline(ax, i, 1)
+	}
 	ax = &graph{
 		xr: lin(0, 0, 100),
 		yr: lin(c.b[1][0], c.b[1][1], 100),
 	}
-	c.gs = append(c.gs, ax)
+	for i := 0; i < 100; i++ {
+		c.drawline(ax, i, 1)
+	}
 }
 
 func lin(t0, t1 float64, n int) []float64 {
@@ -110,8 +121,8 @@ func lin(t0, t1 float64, n int) []float64 {
 
 func (c *canvas) Draw(fn string) {
 	c.clear()
-	c.axes()
-	for _, g := range c.gs {
+	c.addAxes()
+	for j, g := range c.gs {
 		for i := 0; i < len(g.xr)-1; i++ {
 			if math.IsNaN(g.xr[i]) || math.IsNaN(g.xr[i+1]) {
 				continue
@@ -119,15 +130,33 @@ func (c *canvas) Draw(fn string) {
 			if math.Abs(g.yr[i]-g.yr[i+1]) >= c.b[1][1]-c.b[1][0] {
 				continue
 			}
-			c.drawline(g, i)
+			c.drawline(g, i, j+2)
 		}
 	}
+	c.addLabel()
 	fp, _ := os.Create("graph.png")
 	defer fp.Close()
 	png.Encode(fp, c.c)
 }
 
-func (c *canvas) drawline(g *graph, n int) {
+func (c *canvas) addLabel() {
+	d := &font.Drawer{
+		Dst:  c.c,
+		Src:  image.NewUniform(color.RGBA{0, 0, 0, 255}),
+		Face: basicfont.Face7x13,
+	}
+	for i, lab := range c.label {
+		xi := c.pad + 10
+		yi := c.pad + 15*(i+1)
+		for j := 0; j < 30; j++ {
+			c.c.Set(xi+j, yi-5, c.c.Palette[i+2])
+		}
+		d.Dot = fixed.Point26_6{fixed.I(xi + 40), fixed.I(yi)}
+		d.DrawString(lab)
+	}
+}
+
+func (c *canvas) drawline(g *graph, n, co int) {
 	ss := [][]float64{g.xr[n : n+2], g.yr[n : n+2]}
 	var a [2][2]int
 	for j := 0; j < 2; j++ {
@@ -139,7 +168,7 @@ func (c *canvas) drawline(g *graph, n int) {
 	for j := 0; j < m; j++ {
 		xi := a[0][0] + int(float64((a[0][1]-a[0][0])*j)/float64(m))
 		yi := a[1][0] + int(float64((a[1][1]-a[1][0])*j)/float64(m))
-		c.c.Set(xi, yi, c.c.Palette[1])
+		c.c.Set(xi, yi, c.c.Palette[co])
 	}
 }
 

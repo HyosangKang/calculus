@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"image/color"
 	"math"
 
 	"main/graph"
@@ -19,7 +20,7 @@ func main() {
 	// take the inputs
 	// a, b := handleInput()
 	g := graph.NewGraph(x, y, -2, 2, 101)
-	c.Add(g)
+	c.Add(g, color.NRGBA{255, 0, 0, 255}, "cos")
 
 	// add another graph
 	y = func(t float64) float64 {
@@ -28,8 +29,8 @@ func main() {
 	x = func(t float64) float64 {
 		return t
 	}
-	g = graph.NewGraph(x, y, -2, 2, 101)
-	c.Add(g)
+	g = graph.NewGraph(x, y, 1, 2, 101)
+	c.Add(g, color.NRGBA{0, 0, 255, 255}, "sin")
 
 	c.Draw("graph.png")
 }

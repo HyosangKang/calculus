@@ -1,28 +1,27 @@
 package main
 
 import (
-	// "main/plot"
-	// "main/solver"
+	"main/plot"
+	"main/solver"
 	// "math"
-	"main/game"
 )
 
 func main() {
 	// System of ODE
-	// fs := []func(float64, []float64) float64{
-	// 	func(t float64, ys []float64) float64 {
-	// 		return -ys[1]
-	// 	},
-	// 	func(t float64, ys []float64) float64 {
-	// 		return -ys[0]
-	// 	},
-	// }
+	fs := []func(float64, []float64) float64{
+		func(t float64, ys []float64) float64 {
+			return -ys[1] / 8
+		},
+		func(t float64, ys []float64) float64 {
+			return -.02 * ys[0]
+		},
+	}
 
-	// tb := [2]float64{0, .6}
-	// init := []float64{10, 5}
-	// nn := 100
-	// tl, yl := solver.RungeKutta(fs, tb, init, nn)
-	// plot.Plot(tl, [][]string{{"A", "B"}}, yl)
+	tb := [2]float64{0, 26}
+	init := []float64{400, 200}
+	nn := 100
+	tl, yl := solver.RungeKutta(fs, tb, init, nn)
+	plot.Plot(tl, [][]string{{"A", "B"}}, yl)
 
 	// Comparision between RK, Euler, and exact
 	// fs := []func(float64, []float64) float64{
@@ -50,7 +49,7 @@ func main() {
 
 	// A game test
 	// a := []int{400, 100, 2}
-	// b := []int{200, 100, 2}
+	// b := []int{200, 80, 10}
 	// g := game.NewGame(false, a, b)
 	// g.Report()
 	// g.Start()
