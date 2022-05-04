@@ -29,7 +29,6 @@ func NewGraph(fx, fy func(float64) float64, t0, t1 float64, n int) graph {
 			s := f[j](t)
 			if math.Abs(s) > MAX {
 				s = math.NaN()
-				continue
 			}
 			r[j] = append(r[j], s)
 		}
