@@ -5,11 +5,11 @@ import (
 	"image/color"
 	"math"
 
-	"calculus/graph"
+	"calculus/draw"
 )
 
 func main() {
-	c := graph.NewCanvas(600, 600)
+	im := draw.NewImg(200, 200, 400, 400)
 	// define the function to draw
 	y := func(t float64) float64 {
 		return math.Cos(t)
@@ -19,8 +19,9 @@ func main() {
 	}
 	// take the inputs
 	// a, b := handleInput()
-	g := graph.NewGraphFunc(x, y, -2, 2, 101)
-	c.Add(g, color.NRGBA{255, 0, 0, 255}, "cos")
+	g1 := draw.NewGraph(x, y, -2, 2, 101)
+	red := color.RGBA{255, 0, 0, 255}
+	im.Add(g1, red, "cos")
 
 	// add another graph
 	y = func(t float64) float64 {
@@ -29,10 +30,14 @@ func main() {
 	x = func(t float64) float64 {
 		return t
 	}
-	g = graph.NewGraphFunc(x, y, 1, 2, 101)
-	c.Add(g, color.NRGBA{0, 0, 255, 255}, "sin")
+	g2 := draw.NewGraph(x, y, 1, 2, 101)
+	blue := color.RGBA{0, 0, 255, 255}
+	im.Add(g2, blue, "sin")
 
-	c.Draw("graph.png")
+	c := draw.NewCanvas(600, 600)
+	c.Add(im)
+	c.Draw()
+	c.Save("graph.png")
 }
 
 func handleInput() (float64, float64) {

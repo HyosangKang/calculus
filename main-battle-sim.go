@@ -1,45 +1,62 @@
 package main
 
 import (
+	"calculus/draw"
 	"calculus/game"
-	"calculus/graph"
 	"calculus/solver"
-	"fmt"
 	"image/color"
 )
 
 func main() {
-	c := graph.NewCanvas(600, 600)
+	// minion setting: num, hp, dps
+	a := []int{400, 100, 2}
+	b := []int{200, 100, 15}
+	c := draw.NewCanvas(600, 600)
+	im := draw.NewImg(0, 0, 600, 600)
 
 	// add numeric solution to a differential equation
 	fs := []func(float64, []float64) float64{
 		func(t float64, ys []float64) float64 {
-			return -ys[1] / 8
+			return -float64(b[2]) * ys[1] / float64(a[1])
 		},
 		func(t float64, ys []float64) float64 {
-			return -.02 * ys[0]
+			return -float64(a[2]) * ys[0] / float64(b[1])
 		},
 	}
-
-	var dur float64 = 22
+	var dur float64 = 40
 	tb := [2]float64{0, dur}
-	init := []float64{400, 200}
 	nn := 100
+	init := []float64{float64(a[0]), float64(b[0])}
 	xs, yss := solver.RungeKutta(fs, tb, init, nn)
-	g := graph.NewGraphArr(xs, yss[0])
-	c.Add(g, color.NRGBA{255, 0, 0, 255}, "RK-A")
-	g = graph.NewGraphArr(xs, yss[1])
-	c.Add(g, color.NRGBA{150, 50, 0, 255}, "RK-B")
+	ei := 0
+	for i := 0; i < len(xs); i++ {
+		for _, ys := range yss {
+			if ys[i] <= 0 {
+				dur = xs[i]
+				ei = i
+				goto RESUME
+			}
+		}
+	}
+RESUME:
+	g := draw.NewGraphArr(xs[:ei], yss[0][:ei])
+	red := color.RGBA{255, 0, 0, 255}
+	im.Add(g, red, "RK-A")
+	g = draw.NewGraphArr(xs[:ei], yss[1][:ei])
+	blue := color.RGBA{0, 0, 255, 255}
+	im.Add(g, blue, "RK-B")
 
-	a := []int{400, 100, 2}
-	b := []int{200, 80, 10}
+	// game simulation
 	ga := game.NewGame(false, a, b)
 	ga.Start()
 	xss, yss := ga.Report(dur)
-	fmt.Println(xss, yss)
-	g = graph.NewGraphArr(xss[0], yss[0])
-	c.Add(g, color.NRGBA{0, 0, 255, 255}, "Sim-A")
-	g = graph.NewGraphArr(xs, yss[1])
-	c.Add(g, color.NRGBA{0, 50, 150, 255}, "Sim-B")
-	c.Draw("graph.png")
+	g = draw.NewGraphArr(xss[0], yss[0])
+	im.Add(g, red, "Sim-A")
+	g = draw.NewGraphArr(xss[1], yss[1])
+	im.Add(g, blue, "Sim-B")
+
+	// draw results
+	c.Add(im)
+	c.Draw()
+	c.Save("graph.png")
 }
