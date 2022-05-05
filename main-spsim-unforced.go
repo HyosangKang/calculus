@@ -1,11 +1,11 @@
 package main
 
 import (
-	"main/spsim"
+	"calculus/spsim/unforced"
 )
 
 // This program animates the solution of the spring motion.
 func main() {
-	s := spsim.NewSpSim()
-	s.Animate()
+	s := unforced.NewSpSim()
+	s.Animate("unforced.gif")
 }

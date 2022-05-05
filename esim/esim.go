@@ -88,14 +88,14 @@ func (e *Esim) handleInput() {
 	}
 }
 
-func (e *Esim) Graph() {
+func (e *Esim) Graph(fn string) {
 	e.Solve()
 	e.FindBounds()
 	e.FindTr()
 	for i := 0; i < e.N; i++ {
 		e.AddFrame(i + 1)
 	}
-	e.Save("graph.gif")
+	e.Save(fn)
 }
 
 func (e *Esim) Solve() {

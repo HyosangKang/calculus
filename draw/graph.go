@@ -10,6 +10,14 @@ type graph struct {
 	xr, yr []float64
 }
 
+func (g graph) Xr() []float64 {
+	return g.xr
+}
+
+func (g graph) Yr() []float64 {
+	return g.yr
+}
+
 func NewGraphArr(xr, yr []float64) graph {
 	if len(xr) != len(yr) {
 		panic("Invalid graph array.")
@@ -20,7 +28,7 @@ func NewGraphArr(xr, yr []float64) graph {
 	}
 }
 
-func NewGraph(fx, fy func(float64) float64, t0, t1 float64, n int) graph {
+func NewGraphFunc(fx, fy func(float64) float64, t0, t1 float64, n int) graph {
 	f := []func(float64) float64{fx, fy}
 	r := make([][]float64, 2)
 	for i := 0; i < n+1; i++ {

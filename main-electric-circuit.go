@@ -1,6 +1,6 @@
 package main
 
-import "main/esim"
+import "calculus/esim"
 
 // The package simulates electric currents of
 // the following electric circuits.
@@ -13,5 +13,5 @@ import "main/esim"
 
 func main() {
 	e := esim.NewEsim()
-	e.Graph()
+	e.Graph("electric.gif")
 }

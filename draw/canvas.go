@@ -34,7 +34,7 @@ func (c *canvas) Add(img *img) {
 	}
 }
 
-func (c *canvas) Draw() {
+func (c *canvas) Draw() *image.Paletted {
 	for _, im := range c.img {
 		im.addAxes()
 		for j, g := range im.graph {
@@ -53,6 +53,7 @@ func (c *canvas) Draw() {
 			c.addLabel(im)
 		}
 	}
+	return c.c
 }
 
 func (c *canvas) Save(fn string) {

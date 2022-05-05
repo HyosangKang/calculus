@@ -11,18 +11,43 @@ type img struct {
 	xb, yb       [2]float64
 	x0, y0, w, h int
 	pad          int
+	trX, trY     func(float64) int
 }
 
-func (im *img) trX(t float64) int {
-	return im.x0 + im.pad + int((t-im.xb[0])/(im.xb[1]-im.xb[0])*float64(im.w-2*im.pad))
+func (im *img) TrX() func(float64) int {
+	return im.trX
 }
 
-func (im *img) trY(t float64) int {
-	return im.y0 + im.pad + int((im.yb[1]-t)/(im.yb[1]-im.yb[0])*float64(im.h-2*im.pad))
+func (im *img) TrY() func(float64) int {
+	return im.trY
+}
+
+func (img *img) Xb() [2]float64 {
+	return img.xb
+}
+
+func (img *img) Yb() [2]float64 {
+	return img.yb
+}
+
+func (im *img) SetTrX(trX func(float64) int) {
+	im.trX = trX
+}
+
+func (im *img) SetTrY(trY func(float64) int) {
+	im.trY = trY
+}
+
+func (im *img) SetXb(xb [2]float64) {
+	im.xb = xb
+}
+
+func (im *img) SetYb(yb [2]float64) {
+	im.yb = yb
 }
 
 func NewImg(x0, y0, w, h int) *img {
-	return &img{
+	im := img{
 		xb:  [2]float64{0, 0},
 		yb:  [2]float64{0, 0},
 		pad: 10,
@@ -31,6 +56,15 @@ func NewImg(x0, y0, w, h int) *img {
 		w:   w,
 		h:   h,
 	}
+	trX := func(t float64) int {
+		return im.x0 + im.pad + int((t-im.xb[0])/(im.xb[1]-im.xb[0])*float64(im.w-2*im.pad))
+	}
+	trY := func(t float64) int {
+		return im.y0 + im.pad + int((im.yb[1]-t)/(im.yb[1]-im.yb[0])*float64(im.h-2*im.pad))
+	}
+	im.trX = trX
+	im.trY = trY
+	return &im
 }
 
 func (c *img) Add(g graph, co color.Color, lab string) {

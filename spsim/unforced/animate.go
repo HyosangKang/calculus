@@ -13,12 +13,12 @@ import (
 	"golang.org/x/image/math/fixed"
 )
 
-func (s *SpSim) Animate() {
+func (s *SpSim) Animate(fn string) {
 	s.GI = initGI()
 	for i := 0; i < s.N; i++ {
 		s.addFrame(i + 1)
 	}
-	fp, err := os.Create("graph.gif")
+	fp, err := os.Create(fn)
 	if err != nil {
 		panic(err)
 	}
@@ -27,7 +27,7 @@ func (s *SpSim) Animate() {
 		panic(err)
 	}
 	fp.Close()
-	fmt.Printf("\nThe spring simulation is saved on `graph.gif`.\n\n")
+	fmt.Printf("\nThe spring simulation is saved on `%s`.\n\n", fn)
 }
 
 func (s *SpSim) addFrame(count int) {

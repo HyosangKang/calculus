@@ -1,8 +1,6 @@
 package main
 
-import (
-	"main/spsim"
-)
+import "main/spsim"
 
 // This program animates the solution of the spring motion.
 func main() {
