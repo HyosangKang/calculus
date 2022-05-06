@@ -36,7 +36,9 @@ func (c *canvas) Add(img *img) {
 
 func (c *canvas) Draw() *image.Paletted {
 	for _, im := range c.img {
-		im.addAxes()
+		if im.axis {
+			im.addAxes()
+		}
 		for j, g := range im.graph {
 			for i := 0; i < len(g.xr)-1; i++ {
 				if math.IsNaN(g.xr[i]) || math.IsNaN(g.xr[i+1]) {

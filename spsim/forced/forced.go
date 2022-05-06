@@ -6,7 +6,7 @@ import (
 	"math"
 )
 
-type SpSim struct {
+type forced struct {
 	V      []float64
 	G      *gif.GIF
 	GI     Ginfo
@@ -17,8 +17,8 @@ type SpSim struct {
 	Xb, Yb [2]float64
 }
 
-func NewSpSim() *SpSim {
-	s := &SpSim{
+func NewSpSim() *forced {
+	s := &forced{
 		G: &gif.GIF{
 			LoopCount: -1,
 		},
@@ -30,7 +30,7 @@ func NewSpSim() *SpSim {
 	return s
 }
 
-func (s *SpSim) handleInput() {
+func (s *forced) handleInput() {
 	imsg := []string{
 		"\n",
 		"====================================\n",
@@ -65,7 +65,7 @@ func (s *SpSim) handleInput() {
 	s.V = v
 }
 
-func (s *SpSim) findSolution() {
+func (s *forced) findSolution() {
 	m, b, k := s.V[0], s.V[1], s.V[2]
 	d := b*b - 4*m*k
 	x0, x1 := s.V[3], s.V[4]
@@ -146,7 +146,7 @@ func (s *SpSim) findSolution() {
 	}
 }
 
-func (s *SpSim) findXY() {
+func (s *forced) findXY() {
 	s.Xb = [2]float64{0, s.V[5]}
 	ymin, ymax := math.MaxFloat64, -math.MaxFloat64
 	for i := 0; i <= s.N; i++ {

@@ -12,6 +12,25 @@ type img struct {
 	x0, y0, w, h int
 	pad          int
 	trX, trY     func(float64) int
+	axis         bool
+}
+
+func (im *img) Copy() *img {
+	return &img{
+		graph: im.graph,
+		color: im.color,
+		label: im.label,
+		xb:    im.xb,
+		yb:    im.yb,
+		x0:    im.x0,
+		y0:    im.y0,
+		w:     im.w,
+		h:     im.h,
+		pad:   im.pad,
+		trX:   im.trX,
+		trY:   im.trY,
+		axis:  im.axis,
+	}
 }
 
 func (im *img) TrX() func(float64) int {
@@ -46,24 +65,31 @@ func (im *img) SetYb(yb [2]float64) {
 	im.yb = yb
 }
 
+func (im *img) SetAxis(on bool) {
+	im.axis = on
+}
+
+func (im *img) SetPad(pad int) {
+	im.pad = pad
+}
+
 func NewImg(x0, y0, w, h int) *img {
 	im := img{
-		xb:  [2]float64{0, 0},
-		yb:  [2]float64{0, 0},
-		pad: 10,
-		x0:  x0,
-		y0:  y0,
-		w:   w,
-		h:   h,
+		xb:   [2]float64{0, 0},
+		yb:   [2]float64{0, 0},
+		pad:  10,
+		x0:   x0,
+		y0:   y0,
+		w:    w,
+		h:    h,
+		axis: true,
 	}
-	trX := func(t float64) int {
+	im.trX = func(t float64) int {
 		return im.x0 + im.pad + int((t-im.xb[0])/(im.xb[1]-im.xb[0])*float64(im.w-2*im.pad))
 	}
-	trY := func(t float64) int {
+	im.trY = func(t float64) int {
 		return im.y0 + im.pad + int((im.yb[1]-t)/(im.yb[1]-im.yb[0])*float64(im.h-2*im.pad))
 	}
-	im.trX = trX
-	im.trY = trY
 	return &im
 }
 

@@ -1,34 +1,16 @@
-package forced
+package spsim
 
 import (
 	"fmt"
-	"image/gif"
 	"math"
 )
 
-type SpSim struct {
-	V      []float64
-	G      *gif.GIF
-	GI     Ginfo
-	F      func(float64) float64 // spring motion solution
-	N      int                   // number of intervals
-	Xb, Yb [2]float64
+func UnforcedSim() ([2]float64, func(float64) float64) {
+	v := handleInputUnforced()
+	return [2]float64{0, v[5]}, findSolutionUnforced(v)
 }
 
-func NewSpSim() *SpSim {
-	s := &SpSim{
-		G: &gif.GIF{
-			LoopCount: 1,
-		},
-		N: 100,
-	}
-	s.handleInput()
-	s.findSolution()
-	s.findXY()
-	return s
-}
-
-func (s *SpSim) handleInput() {
+func handleInputUnforced() []float64 {
 	imsg := []string{
 		"\n",
 		"====================================\n",
@@ -60,13 +42,13 @@ func (s *SpSim) handleInput() {
 		fmt.Printf("Enter the value of %s", m)
 		fmt.Scanf("%f\n", &v[i])
 	}
-	s.V = v
+	return v
 }
 
-func (s *SpSim) findSolution() {
-	m, b, k := s.V[0], s.V[1], s.V[2]
+func findSolutionUnforced(v []float64) func(float64) float64 {
+	m, b, k := v[0], v[1], v[2]
 	d := b*b - 4*m*k
-	x0, x1 := s.V[3], s.V[4]
+	x0, x1 := v[3], v[4]
 	var f func(float64) float64
 	switch {
 	case d > 0: // the characteristic polynomial has two real roots.
@@ -99,29 +81,5 @@ func (s *SpSim) findSolution() {
 			return c1*math.Exp(re*t)*math.Cos(im*t) + c2*math.Exp(re*t)*math.Sin(im*t)
 		}
 	}
-	s.F = func(t float64) float64 {
-		return -f(t)
-	}
-}
-
-func (s *SpSim) findXY() {
-	s.Xb = [2]float64{0, s.V[5]}
-	ymin, ymax := math.MaxFloat64, -math.MaxFloat64
-	for i := 0; i <= s.N; i++ {
-		x := s.V[5] / float64(s.N) * float64(i)
-		y := s.F(x)
-		if y < ymin {
-			ymin = y
-		}
-		if y > ymax {
-			ymax = y
-		}
-	}
-	if ymin > 0 {
-		ymin = 0
-	}
-	if ymax < 0 {
-		ymax = 0
-	}
-	s.Yb = [2]float64{ymin, ymax}
+	return f
 }

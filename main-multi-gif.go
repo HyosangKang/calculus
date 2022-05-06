@@ -26,12 +26,8 @@ func main() {
 	g2 := draw.NewGraphFunc(x, f2, -2, 2, 100)
 	y2r := g2.Yr()
 	im := draw.NewImg(0, 0, 600, 600)
-	im.Add(g1, color.Black, "")
-	im.Add(g2, color.Black, "")
-	trX := im.TrX()
-	trY := im.TrY()
-	xb := im.Xb()
-	yb := im.Yb()
+	im.Add(g1, color.Opaque, "")
+	im.Add(g2, color.Opaque, "")
 	red := color.RGBA{255, 0, 0, 255}
 	blue := color.RGBA{0, 0, 255, 255}
 
@@ -41,13 +37,9 @@ func main() {
 	for i := 1; i <= 100; i++ {
 		g1p := draw.NewGraphArr(xr[:i], y1r[:i])
 		g2p := draw.NewGraphArr(xr[:i], y2r[:i])
-		ima := draw.NewImg(0, 0, 600, 600)
+		ima := im.Copy()
 		ima.Add(g1p, red, "cos")
 		ima.Add(g2p, blue, "sin")
-		ima.SetTrX(trX)
-		ima.SetTrY(trY)
-		ima.SetXb(xb)
-		ima.SetYb(yb)
 		can := draw.NewCanvas(600, 600)
 		can.Add(ima)
 		c := can.Draw()

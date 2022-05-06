@@ -1,4 +1,4 @@
-package forced
+package unforced
 
 type Ginfo struct {
 	Height   int    // height (pixel) of image
