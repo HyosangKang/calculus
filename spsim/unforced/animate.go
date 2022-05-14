@@ -27,15 +27,10 @@ func (s *SpSim) Animate(fn string) {
 		panic(err)
 	}
 	fp.Close()
-	fmt.Printf("\nThe spring simulation is saved on `%s`.\n\n", fn)
 }
 
 func (s *SpSim) addFrame(count int) {
-	palette := []color.Color{
-		color.White,
-		color.Black,
-		color.NRGBA{255, 0, 0, 255},
-		color.NRGBA{0, 0, 255, 255}}
+	palette := []color.Color{color.White, color.Black}
 	c := image.NewPaletted(image.Rect(0, 0, s.GI.Width, s.GI.Height), palette)
 	s.clear(c)
 	s.axes(c)
@@ -80,21 +75,10 @@ func (s *SpSim) trY(y float64) int {
 func (s *SpSim) drawGraph(c *image.Paletted, count int) {
 	for i := 0; i < count; i++ {
 		x0, x1 := s.Xb[1]/float64(s.N)*float64(i), s.Xb[1]/float64(s.N)*float64(i+1)
-		// draw x
 		y0, y1 := s.F(x0), s.F(x1)
 		p0 := [2]int{s.trX(x0), s.trY(y0)}
 		p1 := [2]int{s.trX(x1), s.trY(y1)}
-		drawLine(c, p0, p1, 1)
-		// draw xc
-		y0, y1 = s.Fc(x0), s.Fc(x1)
-		p0 = [2]int{s.trX(x0), s.trY(y0)}
-		p1 = [2]int{s.trX(x1), s.trY(y1)}
-		drawLine(c, p0, p1, 2)
-		// draw xp
-		y0, y1 = s.Fp(x0), s.Fp(x1)
-		p0 = [2]int{s.trX(x0), s.trY(y0)}
-		p1 = [2]int{s.trX(x1), s.trY(y1)}
-		drawLine(c, p0, p1, 3)
+		drawLine(c, p0, p1)
 	}
 	s.addLabel(c)
 }
@@ -113,7 +97,7 @@ func (s *SpSim) addLabel(c *image.Paletted) {
 	d.Dot = fixed.Point26_6{fixed.I(s.GI.SpWidth + 30), fixed.I(30)}
 
 	d.DrawString(label)
-	label = fmt.Sprintf("%.1fx'' + %.1fx' + %.1fx = sin(x), x(0) = %.1f, x'(0) = %.1f ", s.V[0], s.V[1], s.V[2], s.V[3], s.V[4])
+	label = fmt.Sprintf("%.1fx'' + %.1fx' + %.1fx = 0, x(0) = %.1f, x'(0) = %.1f ", s.V[0], s.V[1], s.V[2], s.V[3], s.V[4])
 	d.Dot = fixed.Point26_6{fixed.I(s.GI.SpWidth + 30), fixed.I(60)}
 	d.DrawString(label)
 
@@ -130,7 +114,7 @@ func (s *SpSim) addLabel(c *image.Paletted) {
 	d.DrawString(label)
 }
 
-func drawLine(c *image.Paletted, p0, p1 [2]int, color int) {
+func drawLine(c *image.Paletted, p0, p1 [2]int) {
 	x, y := 0, 0
 	n := findMax(p0, p1)
 	for i := 0; i <= n; i++ {
@@ -140,7 +124,7 @@ func drawLine(c *image.Paletted, p0, p1 [2]int, color int) {
 			continue
 		}
 		x, y := nx, ny
-		c.Set(x, y, c.Palette[color])
+		c.Set(x, y, c.Palette[1])
 	}
 }
 
@@ -176,7 +160,7 @@ func (s *SpSim) addSpring(c *image.Paletted, count int) {
 	for i := 0; i < 100; i++ {
 		p0 := s.springXY(i, count)
 		p1 := s.springXY(i+1, count)
-		drawLine(c, p0, p1, 1)
+		drawLine(c, p0, p1)
 	}
 }
 
@@ -201,7 +185,7 @@ func (s *SpSim) addCircle(c *image.Paletted, count int) {
 	for i := 0; i < 100; i++ {
 		p0 := s.circleXY(s.trY(y), i)
 		p1 := s.circleXY(s.trY(y), i+1)
-		drawLine(c, p0, p1, 1)
+		drawLine(c, p0, p1)
 	}
 }
 
