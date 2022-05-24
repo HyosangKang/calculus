@@ -150,11 +150,11 @@ func (e *Esim) Solve() {
 	c2, d2 := -L*R2*a2, 1/C-(R1+R2)/C*b2
 	// alpha = (L/C+R1*R2)/(2*L*R2)
 	// +-beta^2 = -L*R2*(L/C+R1*R2)^2/(4*(L*R2)^2) + (R1+R2)/C
-	// gamma = (d - c*(L/C+R1*R2)/(2*L*R2))
+	// gamma = (d - c*alpha)/beta
 	alpha2 := (L/C + R1*R2) / (2 * L * R2)
-	bb2 := -L*R2*(L/C+R1*R2)*(L/C+R1*R2)/(4*(L*R2)*(L*R2)) + (R1+R2)/C
+	bb2 := -(L/C+R1*R2)*(L/C+R1*R2)/(4*(L*R2)*(L*R2)) + (R1+R2)/C/(L*R2)
 	beta2 := math.Sqrt(math.Abs(bb2))
-	gamma2 := (d2 - c2*(L/C+R1*R2)/(2*L*R2))
+	gamma2 := (d2 - c2*alpha2) / beta2
 
 	if bb2 < 0 {
 		f1, f2 = math.Cosh, math.Sinh

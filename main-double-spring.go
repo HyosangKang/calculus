@@ -1,8 +1,8 @@
 package main
 
-import "main/dspsim"
+import "calculus/spsim/double"
 
 func main() {
-	e := dspsim.NewDspSim()
+	e := double.NewDspSim()
 	e.Animate()
 }

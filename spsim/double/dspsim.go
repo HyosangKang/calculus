@@ -1,4 +1,4 @@
-package dspsim
+package double
 
 import (
 	"fmt"
