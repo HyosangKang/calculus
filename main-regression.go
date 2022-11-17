@@ -1,7 +1,7 @@
 package main
 
 import (
-	"main/scatter"
+	"calculus/scatter"
 
 	"fmt"
 	"math/rand"
